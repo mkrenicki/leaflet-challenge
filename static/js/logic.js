@@ -39,6 +39,12 @@ d3.json(equakeJSON, function(data) {
         return magnitude*10;
     }
 
+    // Create a GeoJSON layer containing the features array on the earthquakeData object
+    // Treat this as a layer group using d3.json
+    // Run the onEachFeature function once for each piece of data in the array
+    var equakeslayer = new L.LayerGroup();
+    L.geoJSON
+}
 
 // Your data markers should reflect the magnitude of the earthquake by their size and and depth of the earth quake by color.
 
