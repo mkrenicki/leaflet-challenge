@@ -11,6 +11,8 @@ var equakeJSON = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_
 d3.json(equakeJSON, function(data) {
     // Once we get a response, send the data.features object to the createFeatures function
     createFeatures(data.features);
+    // Check attributes of USGS geoJSON
+    console.log(data.features)
   });
   
   function createFeatures(earthquakeData) {
@@ -25,25 +27,62 @@ d3.json(equakeJSON, function(data) {
     function ColorSelect(magnitude) {
         switch (true) {
             case magnitude > 7:
-                return "MediumBlue";
+                return "#ff5533";
             case magnitude > 6:
-                return "DeepSkyBlue";
+                return "#ff7433";
             case magnitude > 5:
-                return "LightSkyBlue";
+                return "#ff9933";
             default:
-                return "PowderBlue";
+                return "#ffbb33";
         }
     }
     // Define a function that makes the size of the circles proportional to the earthquake magnitude
     function circleSize(magnitude) {
-        return magnitude*10;
+        return magnitude*100;
     }
 
     // Create a GeoJSON layer containing the features array on the earthquakeData object
-    // Treat this as a layer group using d3.json
+    // Use pointtoLayer to create circle markers as shown in documentation here... https://leafletjs.com/examples/geojson/
     // Run the onEachFeature function once for each piece of data in the array
-    var equakeslayer = new L.LayerGroup();
-    L.geoJSON
+    var earthquakes = L.geoJSON(earthquakeData, {
+        pointToLayer: function(earthquakeData, latlng) {
+            return L.circle(latlng, {
+                radius: circleSize(earthquakeData.properties.mag),
+                color: ColorSelect(earthquakeData.properties.mag),
+                fillOpacity: 0.8
+      });
+    },
+    onEachFeature: onEachFeature
+    });
+    console.log(earthquakes)
+
+// Sending our earthquakes layer to the createMap function
+  createMap(earthquakes);
+}
+
+function createMap(earthquakes) {
+
+// Creating our initial map object
+// We set the longitude, latitude, and the starting zoom level
+// This gets inserted into the div with an id of 'map'
+var myMap = L.map("map", {
+    center: [0, 0],
+    zoom: 2
+  });
+
+  // Add earthquake data as a layer
+  
+  
+  // Adding a tile layer (the background map image) to our map
+  // We use the addTo method to add objects to our map
+  L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+    attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+    tileSize: 512,
+    maxZoom: 18,
+    zoomOffset: -1,
+    id: "mapbox/streets-v11",
+    accessToken: API_KEY
+  }).addTo(myMap);
 }
 
 // Your data markers should reflect the magnitude of the earthquake by their size and and depth of the earth quake by color.
@@ -56,5 +95,3 @@ d3.json(equakeJSON, function(data) {
 
 
 // Create a legend that will provide context for your map data.
-
-
