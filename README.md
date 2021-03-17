@@ -1,5 +1,7 @@
 # Leaflet Homework - Visualizing Data with Leaflet
 
+## Note that a Mapbox key must be entered into config.js in order to run
+
 ## Background
 
 ![1-Logo](Images/1-Logo.png)
