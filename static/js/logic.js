@@ -38,7 +38,7 @@ d3.json(equakeJSON, function(data) {
     }
     // Define a function that makes the size of the circles proportional to the earthquake magnitude
     function circleSize(magnitude) {
-        return magnitude*100;
+        return magnitude*800;
     }
 
     // Create a GeoJSON layer containing the features array on the earthquakeData object
@@ -54,44 +54,47 @@ d3.json(equakeJSON, function(data) {
     },
     onEachFeature: onEachFeature
     });
-    console.log(earthquakes)
 
 // Sending our earthquakes layer to the createMap function
+// Coding below based closely off class excercise 17.1.10 again
   createMap(earthquakes);
 }
 
 function createMap(earthquakes) {
 
-// Creating our initial map object
-// We set the longitude, latitude, and the starting zoom level
-// This gets inserted into the div with an id of 'map'
-var myMap = L.map("map", {
-    center: [0, 0],
-    zoom: 2
-  });
-
-  // Add earthquake data as a layer
-  
-  
-  // Adding a tile layer (the background map image) to our map
-  // We use the addTo method to add objects to our map
-  L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  // Define streetmap layer
+  var streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
     tileSize: 512,
     maxZoom: 18,
     zoomOffset: -1,
     id: "mapbox/streets-v11",
     accessToken: API_KEY
+  });
+
+// Define a baseMaps object to hold our base layers
+var baseMaps = {
+    "Street Map": streetmap,
+};
+
+// Add earthquake data as a layer
+var overlayMaps = {
+    Earthquakes: earthquakes
+};
+  
+// Create our map, giving it the streetmap and earthquakes layers to display on load
+var myMap = L.map("map", {
+    center: [
+        37.09, -95.71
+    ],
+    zoom: 3,
+    layers: [streetmap, earthquakes]
+  });
+
+  // Create a layer control
+  // Pass in our baseMaps and overlayMaps
+  // Add the layer control to the map
+  L.control.layers(baseMaps, overlayMaps, {
+    collapsed: false
   }).addTo(myMap);
 }
-
-// Your data markers should reflect the magnitude of the earthquake by their size and and depth of the earth quake by color.
-
-
-// Earthquakes with higher magnitudes should appear larger and earthquakes with greater depth should appear darker in color.
-
-
-// Include popups that provide additional information about the earthquake when a marker is clicked.
-
-
-// Create a legend that will provide context for your map data.
